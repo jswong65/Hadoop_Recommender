@@ -29,9 +29,15 @@ Input Format: UserId, MovieId, Rating
             * if we have the occurrence pair <Movie2, Movie1=0.2>, then Movie 2 would contribute 10 * 0.2 to the rating of Movie1 that User 1 might give.
         * **conclusion**: if the normalized_occurrence is larger, it may imply Movie2 could have more impact on the recommendation of Movie1. 
 4. [Multiplication](https://github.com/jswong65/Hadoop_Recommender/blob/master/src/main/java/Multiplication.java):
-    * **Input1**: 
-    * **CooccurrenceMapper**:
-    * **Input2**:
-    * **RatingMapper**:
-    * **MultiplicationReducer**:
+    * **Input1**: Movie2\t Movie1=normalized_occurrence
+    * **CooccurrenceMapper**: Creates <Movie2, Movie1=normalized_occurrence> pairs
+    * **Input2**: user,movie,rating
+    * **RatingMapper**: Creates <movie, user:rating> pairs
+    * **MultiplicationReducer**: Writes out <User1:Movie1, normalized_occurrence * rating> pair
 5. [Sum](https://github.com/jswong65/Hadoop_Recommender/blob/master/src/main/java/Sum.java): Sums up the associated Multiplication of a movie.
+    * **Input**: User1:Movie1\t normalized_occurrence * rating
+    * **SumMapper** Creates the <User1:Movie1, normalized_occurrence * rating>
+    * **SumReducer** Writes out the <User1:Movie1, sum(normalized_occurrence * rating)>.
+    
+ The final output will be User1:Movie1\t possible rating.
+ 
