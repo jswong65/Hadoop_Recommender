@@ -1,4 +1,4 @@
-# Hadoop_Recommender
+# Hadoop Recommender
 Item collaborative filtering implementation with Hadoop
 
 Typically, we take row(i) from a matrix A (R<sup>m-by-k</sup>), and a column(j) from a matrix B (R<sup>k-by-n</sup>) to perform a dot product to get the value of the cell (i, j) in the output matrix C (R<sup>m-by-n</sup>). However, when we need to multiply two matrixes with a large size, we may not be able to fit the entire row or entire columns into memory. Therefore, when performing matrix multiplication using Hadoop, we will need one MapReduce process to multiply two matrix cell by cell with a proper key assignment as an intermediate result of each cell of the new matrix. Another MapReduce process can then aggregate the corresponding values for each cell.
@@ -12,8 +12,16 @@ Input Format: UserId, MovieId, Rating
 
 ### MapReduce components:
 1. [DataDividerByUser](https://github.com/jswong65/Hadoop_Recommender/blob/master/src/main/java/DataDividerByUser.java): Concatenates all of the rating given by individual users.
-  * 
+    * Input: UserId,MovieId,Rating
+    * DataDividerMapper: Creates the <UserId, MovieId:Rating> pairs
+    * DataDividerReducer: Write out the list of movies rated by a user <UserId, Movie1:Rating, Movie2:Rating, ...>
 2. [CoOccurrenceMatrixGenerator](https://github.com/jswong65/Hadoop_Recommender/blob/master/src/main/java/CoOccurrenceMatrixGenerator.java): Creates a co-occurrence matrix based on the frequency of two movies rated by an user. 
+    * Input: UserId\t Movie1:Rating,Movie2:Rating, ...
+    * MatrixGeneratorMapper: Creates the <Movie1:Movie2, 1> pairs
+    * MatrixGeneratorReducer: Write out the aggregated co-occurrence frequency of between pairs of moves. <Movie1:Movie2, occurrence>
 3. [Normalize](https://github.com/jswong65/Hadoop_Recommender/blob/master/src/main/java/Normalize.java): Normalizes the co-occurrence by row as the similarity score between two movies. 
+    * Input: 
+    *
+    *
 4. [Multiplication](https://github.com/jswong65/Hadoop_Recommender/blob/master/src/main/java/Multiplication.java):
 5. [Sum](https://github.com/jswong65/Hadoop_Recommender/blob/master/src/main/java/Sum.java): Sums up the associated Multiplication of a movie.
