@@ -17,23 +17,38 @@ import java.io.IOException;
 public class Sum {
 
     public static class SumMapper extends Mapper<LongWritable, Text, Text, DoubleWritable> {
-
+        // input userId:movie\t subRating
         // map method
+
+        Text outKey = new Text();
+        DoubleWritable outVal = new DoubleWritable();
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
             //pass data to reducer
+            String [] line = value.toString().trim().split("\t");
+            outKey.set(line[0]);
+            outVal.set(Double.parseDouble(line[1]));
+            context.write(outKey, outVal);
         }
     }
 
     public static class SumReducer extends Reducer<Text, DoubleWritable, Text, DoubleWritable> {
         // reduce method
+
+        DoubleWritable outVal = new DoubleWritable();
         @Override
         public void reduce(Text key, Iterable<DoubleWritable> values, Context context)
                 throws IOException, InterruptedException {
 
             //user:movie relation
-           //calculate the sum
+            //calculate the sum
+            double sum = 0;
+            for (DoubleWritable val: values){
+                sum += val.get();
+            }
+            outVal.set(sum);
+            context.write(key, outVal);
         }
     }
 
